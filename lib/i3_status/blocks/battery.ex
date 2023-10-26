@@ -11,7 +11,7 @@ defmodule I3Status.Blocks.Battery do
   ## /sys/class/power_supply/BAT0/energy_now
   ## /sys/class/power_supply/BAT0/status => Charging, Discharging
 
-  def handle_update(_state) do
+  def handle_update(state) do
     now = File.read!("/sys/class/power_supply/BAT0/energy_now")
     full = File.read!("/sys/class/power_supply/BAT0/energy_full")
     charging = File.read!("/sys/class/power_supply/BAT0/status")
@@ -23,11 +23,13 @@ defmodule I3Status.Blocks.Battery do
     percent = Float.floor(now * 100 / full, 1)
 
     # %{full_text: "#{charge_icon} ■■■■■■■■■▰ #{percent}%"}
-    %{
+    block = %{
       full_text: "#{charge_icon} #{bar(now, full)} #{percent}%",
       short_text: "#{charge_icon} #{percent}%",
       markup: "pango"
     }
+
+    {:emit, block, state}
   end
 
   ## Private functions

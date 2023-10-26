@@ -25,8 +25,14 @@ defmodule I3Status.Bar do
         {:ok, pid} =
           DynamicSupervisor.start_child(I3Status.BlockSupervisor, {block, offset: index})
 
-        ## FIXME: Clean this lol
-        :sys.get_state(pid).name
+        pid
+      end)
+      |> Enum.map(fn pid ->
+        receive do
+          {:"$gen_cast", {:started, ^pid, %{name: name}}} -> name
+        after
+          5000 -> raise "started timeout"
+        end
       end)
 
     {:ok, %{blocks: block_names, states: %{}}, {:continue, :init_loop}}
@@ -55,7 +61,7 @@ defmodule I3Status.Bar do
         receive do
           {:"$gen_cast", {:update, ^name, value}} -> Map.put(value, :name, name)
         after
-          5000 -> raise "timeout"
+          5000 -> raise "first update timeout"
         end
       end)
 

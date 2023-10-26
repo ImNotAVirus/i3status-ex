@@ -8,6 +8,7 @@ defmodule I3Status.Application do
   @impl true
   def start(_type, _args) do
     blocks = [
+      I3Status.Blocks.Updates,
       I3Status.Blocks.Battery,
       I3Status.Blocks.DateBlock
     ]

@@ -43,7 +43,17 @@ defmodule I3Status.Block do
           restart: :permanent
         }
       end
+
+      ## Block bahaviour
+
+      def setup(state), do: {:ok, state}
+
+      defoverridable setup: 1
     end
+  end
+
+  def emit(name, value) do
+    GenServer.cast(I3Status.Bar, {:update, name, value})
   end
 
   ## Internal behaviour
@@ -55,20 +65,31 @@ defmodule I3Status.Block do
   ## GenServer behaviour
 
   @impl true
-  def init(opts) do
+  def init(state) do
+    {:ok, new_state} = state.mod.setup(state)
+    GenServer.cast(I3Status.Bar, {:started, self(), new_state})
+
     send(self(), :tick_update)
-    {:ok, opts}
+
+    {:ok, new_state}
   end
 
   @impl true
   def handle_info(:tick_update, state) do
     %{name: name, mod: mod, interval: interval} = state
 
-    value = mod.handle_update(state)
-    GenServer.cast(I3Status.Bar, {:update, name, value})
+    new_state =
+      case mod.handle_update(state) do
+        {:emit, value, state} ->
+          emit(name, value)
+          state
+
+        {:noemit, state} ->
+          state
+      end
 
     Process.send_after(self(), :tick_update, interval)
 
-    {:noreply, state}
+    {:noreply, new_state}
   end
 end

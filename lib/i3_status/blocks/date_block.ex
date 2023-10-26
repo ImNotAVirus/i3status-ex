@@ -7,8 +7,8 @@ defmodule I3Status.Blocks.DateBlock do
 
   ## Block behaviour
 
-  def handle_update(_state) do
-    %{full_text: " #{now_to_string()}"}
+  def handle_update(state) do
+    {:emit, %{full_text: " #{now_to_string()}"}, state}
   end
 
   ## Private helpers
