@@ -25,6 +25,7 @@ defmodule I3Status.Blocks.Battery do
     # %{full_text: "#{charge_icon} ■■■■■■■■■▰ #{percent}%"}
     %{
       full_text: "#{charge_icon} #{bar(now, full)} #{percent}%",
+      short_text: "#{charge_icon} #{percent}%",
       markup: "pango"
     }
   end
