@@ -100,7 +100,7 @@ defmodule I3Status.Bar do
 
   defp build(blocks) do
     bg_colors = Stream.cycle(["#562877", "#764C99"])
-    normal_colors = Stream.cycle(["#CCCCCC", "#370140"])
+    normal_colors = Stream.cycle(["#CCCCCC", "#400d49"])
     info_colors = Stream.cycle(["#007BFF", "#4BA2FF"])
     success_colors = Stream.cycle(["#28A745", "#34C455"])
     warning_colors = Stream.cycle(["#FFC107", "#FFD043"])
