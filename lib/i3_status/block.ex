@@ -47,8 +47,9 @@ defmodule I3Status.Block do
       ## Block bahaviour
 
       def setup(state), do: {:ok, state}
+      def handle_click(_event, state), do: {:noemit, state}
 
-      defoverridable setup: 1
+      defoverridable setup: 1, handle_click: 2
     end
   end
 
@@ -89,6 +90,23 @@ defmodule I3Status.Block do
       end
 
     Process.send_after(self(), :tick_update, interval)
+
+    {:noreply, new_state}
+  end
+
+  @impl true
+  def handle_cast({:click, event}, state) do
+    %{name: name, mod: mod} = state
+
+    new_state =
+      case mod.handle_click(event, state) do
+        {:emit, value, state} ->
+          emit(name, value)
+          state
+
+        {:noemit, state} ->
+          state
+      end
 
     {:noreply, new_state}
   end

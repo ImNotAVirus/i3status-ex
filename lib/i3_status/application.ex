@@ -8,14 +8,18 @@ defmodule I3Status.Application do
   @impl true
   def start(_type, _args) do
     blocks = [
-      I3Status.Blocks.Updates,
-      I3Status.Blocks.Battery,
+      I3Status.Blocks.SpotifyBlock,
+      I3Status.Blocks.SystemUpdatesBlock,
+      I3Status.Blocks.CPUBlock,
+      I3Status.Blocks.RAMBlock,
+      I3Status.Blocks.BatteryBlock,
       I3Status.Blocks.DateBlock
     ]
 
     children = [
       {Registry, keys: :unique, name: I3Status.BlockRegistry},
       {DynamicSupervisor, strategy: :one_for_one, name: I3Status.BlockSupervisor},
+      {I3Status.InputsManager, []},
       {I3Status.Bar, blocks: blocks}
     ]
 

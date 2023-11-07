@@ -1,6 +1,6 @@
-defmodule I3Status.Blocks.Battery do
+defmodule I3Status.Blocks.BatteryBlock do
   @moduledoc """
-  TODO: Documentation for I3Status.Blocks.Battery
+  TODO: Documentation for I3Status.Blocks.BatteryBlock
   """
 
   use I3Status.Block, name: "battery", interval: :timer.seconds(2)

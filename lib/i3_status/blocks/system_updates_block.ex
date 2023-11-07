@@ -1,6 +1,6 @@
-defmodule I3Status.Blocks.Updates do
+defmodule I3Status.Blocks.SystemUpdatesBlock do
   @moduledoc """
-  TODO: Documentation for I3Status.Blocks.Updates
+  TODO: Documentation for I3Status.Blocks.SystemUpdatesBlock
   """
 
   use I3Status.Block, name: "updates", interval: :timer.hours(1)
@@ -13,8 +13,8 @@ defmodule I3Status.Blocks.Updates do
   def handle_update(state) do
     # Update the local packages db
     with {_, 0} <- System.cmd("yay", ["-Sy"]),
-         # List updates
-         {result, 0} <- System.cmd("yay", ["-Qu"]) do
+         # List updates (code 0 when updates available or 1 if up to date)
+         {result, _} <- System.cmd("yay", ["-Qu"]) do
       count = result |> String.split("\n", trim: true) |> length()
 
       case count do
@@ -32,5 +32,10 @@ defmodule I3Status.Blocks.Updates do
       _ -> %{full_text: " error when fetching updates", short_text: " error", color: "danger"}
     end
     |> then(&{:emit, &1, state})
+  end
+
+  def handle_click(_event, state) do
+    System.cmd("alacritty",["--hold", "-e", "yay", "-Suy"])
+    {:noemit, state}
   end
 end

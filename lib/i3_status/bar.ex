@@ -41,7 +41,7 @@ defmodule I3Status.Bar do
   @impl true
   def handle_continue(:init_loop, state) do
     # Send the header so that i3bar knows we want to use JSON:
-    emit(%{version: 1})
+    emit(%{version: 1, click_events: true})
     emit("\n")
 
     # Begin the endless array.
@@ -141,8 +141,7 @@ defmodule I3Status.Bar do
           background: bg_color,
           separator: false,
           separator_block_width: 0,
-          align: "center",
-          min_width: block.full_text <> "  "
+          align: "left"
         }
 
         color =
@@ -158,6 +157,12 @@ defmodule I3Status.Bar do
         default
         |> Map.merge(block)
         |> Map.put(:color, color)
+        |> update_existing(:full_text, &" #{&1} ")
+        |> update_existing(:short_text, &" #{&1} ")
+        |> update_existing(:min_width, fn
+          width when is_integer(width) -> width + 2
+          width when is_binary(width) -> " #{width} "
+        end)
       end)
 
     separator_colors = Stream.zip(bg_colors, Stream.drop(bg_colors, 1))
@@ -176,5 +181,12 @@ defmodule I3Status.Bar do
     separators
     |> Enum.zip(blocks)
     |> Enum.flat_map(&Tuple.to_list/1)
+  end
+
+  def update_existing(map, key, fun) do
+    case map do
+      %{^key => old} -> %{map | key => fun.(old)}
+      %{} -> map
+    end
   end
 end

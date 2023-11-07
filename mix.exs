@@ -14,7 +14,7 @@ defmodule I3Status.MixProject do
   # Run "mix help compile.app" to learn about applications.
   def application do
     [
-      extra_applications: [:logger],
+      extra_applications: [:logger, :os_mon],
       mod: {I3Status.Application, []}
     ]
   end
@@ -22,7 +22,8 @@ defmodule I3Status.MixProject do
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
-      {:poison, "~> 5.0"}
+      {:poison, "~> 5.0"},
+      {:logger_file_backend, "~> 0.0"}
     ]
   end
 end
